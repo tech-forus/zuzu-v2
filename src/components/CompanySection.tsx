@@ -509,24 +509,23 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm text-slate-700">
               <input
-                type="checkbox"
+                type="radio"
                 className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
               />
-              <span>Air Express</span>
+              <span>LTL</span>
             </label>
             <label className="flex items-center gap-2 text-sm text-slate-700">
               <input
-                type="checkbox"
+                type="radio"
                 className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
               />
-              <span>Surface</span>
+              <span>FTL</span>
             </label>
             <label className="flex items-center gap-2 text-sm text-slate-700">
               <input
-                type="checkbox"
+                type="radio"
                 className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span>Rail</span>
+              /
             </label>
           </div>
         </div>
