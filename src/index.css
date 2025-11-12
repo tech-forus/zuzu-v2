@@ -4,23 +4,57 @@
 
 /* Form Layout Classes */
 .fc-form-shell {
-  /* Container for form cards */
+  /* Container for form cards - centered with max-width */
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
 }
 
 .fc-form-grid {
-  /* 3-column grid for form fields */
+  /* 3-column grid for form fields - responsive */
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem 2rem;
+}
+
+/* Desktop: 3 columns at 800px+ */
+@media (min-width: 800px) {
+  .fc-form-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .fc-span-3 {
   /* Full width spanning all 3 columns */
+  grid-column: 1 / -1;
 }
 
 .fc-vertical-stack {
   /* Vertical stacking for checkbox groups */
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .fc-transport-mode {
   /* Transport mode field wrapper */
+}
+
+.fc-form-actions {
+  /* Right-aligned actions like rating slider */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Field wrapper for consistent styling */
+.field {
+  display: flex;
+  flex-direction: column;
 }
 
 /* Disabled Options Styling */
