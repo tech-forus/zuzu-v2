@@ -1,6 +1,7 @@
 /**
  * CompanySection component
  * Handles company and contact information with pincode autofill
+ * Redesigned with 3-column grid layout
  */
 
 import React from 'react';
@@ -36,20 +37,76 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
     isManual,
   } = pincodeLookup;
 
-  return (
-    <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
-      <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-        <InformationCircleIcon className="w-5 h-5 text-blue-500" />
-        Company & Contact Information
-      </h2>
+  // Common label className with enhanced typography
+  const labelClass = "block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-2";
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Company Name */}
+  // Common input className with enhanced styling
+  const inputClass = (hasError: boolean) =>
+    `mt-1 block w-full border rounded-lg shadow-sm px-4 py-3 text-sm text-slate-800 placeholder-slate-400
+     focus:outline-none focus:ring-2 focus:border-blue-500 transition-all duration-200 bg-white
+     ${hasError ? 'border-red-500 focus:ring-red-500' : 'border-slate-300 focus:ring-blue-500'}`;
+
+  return (
+    <div className="fc-form-shell bg-white rounded-xl shadow-lg border border-slate-200 p-10">
+      {/* Card Header with Divider */}
+      <div className="mb-8 pb-5 border-b border-slate-200">
+        <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+          <InformationCircleIcon className="w-7 h-7 text-blue-500" />
+          Company Information
+        </h2>
+      </div>
+
+      {/* 3-Column Grid */}
+      <div className="fc-form-grid grid grid-cols-1 md:grid-cols-3 gap-y-6 gap-x-8">
+
+        {/* ==================== ROW 1 ==================== */}
+        {/* Legal Company Name (Col 1) */}
         <div>
-          <label
-            htmlFor="companyName"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
+          <label htmlFor="legalCompanyName" className={labelClass}>
+            Legal Company Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="legalCompanyName"
+            name="legalCompanyName"
+            value={basics.legalCompanyName}
+            onChange={(e) => setField('legalCompanyName', e.target.value.slice(0, 60))}
+            onBlur={() => validateField('legalCompanyName')}
+            maxLength={60}
+            className={inputClass(!!errors.legalCompanyName)}
+            placeholder="Enter legal company name"
+            required
+          />
+          {errors.legalCompanyName && (
+            <p className="mt-1.5 text-xs text-red-600">{errors.legalCompanyName}</p>
+          )}
+        </div>
+
+        {/* Display Name (Col 2) */}
+        <div>
+          <label htmlFor="displayName" className={labelClass}>
+            Display Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="displayName"
+            name="displayName"
+            value={basics.displayName}
+            onChange={(e) => setField('displayName', e.target.value.slice(0, 30))}
+            onBlur={() => validateField('displayName')}
+            maxLength={30}
+            className={inputClass(!!errors.displayName)}
+            placeholder="Enter display name"
+            required
+          />
+          {errors.displayName && (
+            <p className="mt-1.5 text-xs text-red-600">{errors.displayName}</p>
+          )}
+        </div>
+
+        {/* Company Name (Col 3) */}
+        <div>
+          <label htmlFor="companyName" className={labelClass}>
             Company Name <span className="text-red-500">*</span>
           </label>
           <input
@@ -60,27 +117,142 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
             onChange={(e) => setField('companyName', e.target.value.slice(0, 30))}
             onBlur={() => validateField('companyName')}
             maxLength={30}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.companyName
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
+            className={inputClass(!!errors.companyName)}
             placeholder="Enter company name"
             required
           />
           {errors.companyName && (
-            <p className="mt-1 text-xs text-red-600">{errors.companyName}</p>
+            <p className="mt-1.5 text-xs text-red-600">{errors.companyName}</p>
           )}
         </div>
 
-        {/* Contact Person Name */}
+        {/* ==================== ROW 2 ==================== */}
+        {/* Sub Vendor (Col 1) */}
         <div>
-          <label
-            htmlFor="contactPersonName"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
+          <label htmlFor="subVendor" className={labelClass}>
+            Sub Vendor <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="subVendor"
+            name="subVendor"
+            value={basics.subVendor}
+            onChange={(e) => setField('subVendor', e.target.value.slice(0, 20))}
+            onBlur={() => validateField('subVendor')}
+            maxLength={20}
+            className={inputClass(!!errors.subVendor)}
+            placeholder="Enter sub vendor"
+            required
+          />
+          {errors.subVendor && (
+            <p className="mt-1.5 text-xs text-red-600">{errors.subVendor}</p>
+          )}
+        </div>
+
+        {/* Vendor Code (Col 2) */}
+        <div>
+          <label htmlFor="vendorCode" className={labelClass}>
+            Vendor Code <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="vendorCode"
+            name="vendorCode"
+            value={basics.vendorCode}
+            onChange={(e) => {
+              // Auto-uppercase and allow only alphanumeric
+              const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20);
+              setField('vendorCode', value);
+            }}
+            onBlur={() => validateField('vendorCode')}
+            maxLength={20}
+            className={inputClass(!!errors.vendorCode)}
+            placeholder="Enter vendor code"
+            required
+          />
+          {errors.vendorCode && (
+            <p className="mt-1.5 text-xs text-red-600">{errors.vendorCode}</p>
+          )}
+        </div>
+
+        {/* Primary Contact Name (Col 3) */}
+        <div>
+          <label htmlFor="primaryContactName" className={labelClass}>
+            Primary Contact Name <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="primaryContactName"
+            name="primaryContactName"
+            value={basics.primaryContactName}
+            onChange={(e) => {
+              // Allow only alphabets, space, hyphen, apostrophe
+              const value = e.target.value.replace(/[^a-zA-Z\s\-']/g, '').slice(0, 25);
+              setField('primaryContactName', value);
+            }}
+            onBlur={() => validateField('primaryContactName')}
+            maxLength={25}
+            className={inputClass(!!errors.primaryContactName)}
+            placeholder="Enter primary contact name"
+            required
+          />
+          {errors.primaryContactName && (
+            <p className="mt-1.5 text-xs text-red-600">{errors.primaryContactName}</p>
+          )}
+        </div>
+
+        {/* ==================== ROW 3 ==================== */}
+        {/* Primary Contact Phone (Col 1) */}
+        <div>
+          <label htmlFor="primaryContactPhone" className={labelClass}>
+            Primary Contact Phone <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="text"
+            id="primaryContactPhone"
+            name="primaryContactPhone"
+            value={basics.primaryContactPhone}
+            onChange={(e) => {
+              // Only allow digits
+              const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+              setField('primaryContactPhone', value);
+            }}
+            onBlur={() => validateField('primaryContactPhone')}
+            inputMode="numeric"
+            maxLength={10}
+            className={inputClass(!!errors.primaryContactPhone)}
+            placeholder="10-digit phone number"
+            required
+          />
+          {errors.primaryContactPhone && (
+            <p className="mt-1.5 text-xs text-red-600">{errors.primaryContactPhone}</p>
+          )}
+        </div>
+
+        {/* Primary Contact Email (Col 2) */}
+        <div>
+          <label htmlFor="primaryContactEmail" className={labelClass}>
+            Primary Contact Email <span className="text-red-500">*</span>
+          </label>
+          <input
+            type="email"
+            id="primaryContactEmail"
+            name="primaryContactEmail"
+            value={basics.primaryContactEmail}
+            onChange={(e) => setField('primaryContactEmail', e.target.value)}
+            onBlur={() => validateField('primaryContactEmail')}
+            className={inputClass(!!errors.primaryContactEmail)}
+            placeholder="email@example.com"
+            required
+          />
+          {errors.primaryContactEmail && (
+            <p className="mt-1.5 text-xs text-red-600">{errors.primaryContactEmail}</p>
+          )}
+        </div>
+
+        {/* Contact Person Name (Col 3) */}
+        <div>
+          <label htmlFor="contactPersonName" className={labelClass}>
             Contact Person <span className="text-red-500">*</span>
           </label>
           <input
@@ -95,30 +267,20 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
             }}
             onBlur={() => validateField('contactPersonName')}
             maxLength={30}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.contactPersonName
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
+            className={inputClass(!!errors.contactPersonName)}
             placeholder="Enter contact person name"
             required
           />
           {errors.contactPersonName && (
-            <p className="mt-1 text-xs text-red-600">
-              {errors.contactPersonName}
-            </p>
+            <p className="mt-1.5 text-xs text-red-600">{errors.contactPersonName}</p>
           )}
         </div>
 
-        {/* Phone Number */}
+        {/* ==================== ROW 4 ==================== */}
+        {/* Vendor Phone Number (Col 1) */}
         <div>
-          <label
-            htmlFor="vendorPhoneNumber"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
-            Phone Number <span className="text-red-500">*</span>
+          <label htmlFor="vendorPhoneNumber" className={labelClass}>
+            Vendor Phone Number <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -133,30 +295,19 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
             onBlur={() => validateField('vendorPhoneNumber')}
             inputMode="numeric"
             maxLength={10}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.vendorPhoneNumber
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
+            className={inputClass(!!errors.vendorPhoneNumber)}
             placeholder="10-digit phone number"
             required
           />
           {errors.vendorPhoneNumber && (
-            <p className="mt-1 text-xs text-red-600">
-              {errors.vendorPhoneNumber}
-            </p>
+            <p className="mt-1.5 text-xs text-red-600">{errors.vendorPhoneNumber}</p>
           )}
         </div>
 
-        {/* Email */}
+        {/* Vendor Email Address (Col 2) */}
         <div>
-          <label
-            htmlFor="vendorEmailAddress"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
-            Email Address <span className="text-red-500">*</span>
+          <label htmlFor="vendorEmailAddress" className={labelClass}>
+            Vendor Email Address <span className="text-red-500">*</span>
           </label>
           <input
             type="email"
@@ -165,30 +316,19 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
             value={basics.vendorEmailAddress}
             onChange={(e) => setField('vendorEmailAddress', e.target.value)}
             onBlur={() => validateField('vendorEmailAddress')}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.vendorEmailAddress
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
+            className={inputClass(!!errors.vendorEmailAddress)}
             placeholder="email@example.com"
             required
           />
           {errors.vendorEmailAddress && (
-            <p className="mt-1 text-xs text-red-600">
-              {errors.vendorEmailAddress}
-            </p>
+            <p className="mt-1.5 text-xs text-red-600">{errors.vendorEmailAddress}</p>
           )}
         </div>
 
-        {/* GST Number (Optional) */}
+        {/* GST No. (Col 3) */}
         <div>
-          <label
-            htmlFor="gstin"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
-            GST Number (Optional)
+          <label htmlFor="gstin" className={labelClass}>
+            GST No. <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -206,287 +346,19 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
               }
             }}
             maxLength={15}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.gstin
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
+            className={inputClass(!!errors.gstin)}
             placeholder="15-character GST number"
           />
           {errors.gstin && (
-            <p className="mt-1 text-xs text-red-600">{errors.gstin}</p>
+            <p className="mt-1.5 text-xs text-red-600">{errors.gstin}</p>
           )}
         </div>
 
-        {/* Legal Company Name */}
+        {/* ==================== ROW 5 ==================== */}
+        {/* Pincode (6 digits) (Col 1) */}
         <div>
-          <label
-            htmlFor="legalCompanyName"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
-            Legal Company Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="legalCompanyName"
-            name="legalCompanyName"
-            value={basics.legalCompanyName}
-            onChange={(e) => setField('legalCompanyName', e.target.value.slice(0, 60))}
-            onBlur={() => validateField('legalCompanyName')}
-            maxLength={60}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.legalCompanyName
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
-            placeholder="Enter legal company name"
-            required
-          />
-          {errors.legalCompanyName && (
-            <p className="mt-1 text-xs text-red-600">{errors.legalCompanyName}</p>
-          )}
-        </div>
-
-        {/* Display Name */}
-        <div>
-          <label
-            htmlFor="displayName"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
-            Display Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="displayName"
-            name="displayName"
-            value={basics.displayName}
-            onChange={(e) => setField('displayName', e.target.value.slice(0, 30))}
-            onBlur={() => validateField('displayName')}
-            maxLength={30}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.displayName
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
-            placeholder="Enter display name"
-            required
-          />
-          {errors.displayName && (
-            <p className="mt-1 text-xs text-red-600">{errors.displayName}</p>
-          )}
-        </div>
-
-        {/* Sub Vendor */}
-        <div>
-          <label
-            htmlFor="subVendor"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
-            Sub Vendor <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="subVendor"
-            name="subVendor"
-            value={basics.subVendor}
-            onChange={(e) => setField('subVendor', e.target.value.slice(0, 20))}
-            onBlur={() => validateField('subVendor')}
-            maxLength={20}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.subVendor
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
-            placeholder="Enter sub vendor"
-            required
-          />
-          {errors.subVendor && (
-            <p className="mt-1 text-xs text-red-600">{errors.subVendor}</p>
-          )}
-        </div>
-
-        {/* Vendor Code */}
-        <div>
-          <label
-            htmlFor="vendorCode"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
-            Vendor Code <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="vendorCode"
-            name="vendorCode"
-            value={basics.vendorCode}
-            onChange={(e) => {
-              // Auto-uppercase and allow only alphanumeric
-              const value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20);
-              setField('vendorCode', value);
-            }}
-            onBlur={() => validateField('vendorCode')}
-            maxLength={20}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.vendorCode
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
-            placeholder="Enter vendor code"
-            required
-          />
-          {errors.vendorCode && (
-            <p className="mt-1 text-xs text-red-600">{errors.vendorCode}</p>
-          )}
-        </div>
-
-        {/* Primary Contact Name */}
-        <div>
-          <label
-            htmlFor="primaryContactName"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
-            Primary Contact Name <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="primaryContactName"
-            name="primaryContactName"
-            value={basics.primaryContactName}
-            onChange={(e) => {
-              // Allow only alphabets, space, hyphen, apostrophe
-              const value = e.target.value.replace(/[^a-zA-Z\s\-']/g, '').slice(0, 25);
-              setField('primaryContactName', value);
-            }}
-            onBlur={() => validateField('primaryContactName')}
-            maxLength={25}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.primaryContactName
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
-            placeholder="Enter primary contact name"
-            required
-          />
-          {errors.primaryContactName && (
-            <p className="mt-1 text-xs text-red-600">{errors.primaryContactName}</p>
-          )}
-        </div>
-
-        {/* Primary Contact Phone */}
-        <div>
-          <label
-            htmlFor="primaryContactPhone"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
-            Primary Contact Phone <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="primaryContactPhone"
-            name="primaryContactPhone"
-            value={basics.primaryContactPhone}
-            onChange={(e) => {
-              // Only allow digits
-              const value = e.target.value.replace(/\D/g, '').slice(0, 10);
-              setField('primaryContactPhone', value);
-            }}
-            onBlur={() => validateField('primaryContactPhone')}
-            inputMode="numeric"
-            maxLength={10}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.primaryContactPhone
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
-            placeholder="10-digit phone number"
-            required
-          />
-          {errors.primaryContactPhone && (
-            <p className="mt-1 text-xs text-red-600">{errors.primaryContactPhone}</p>
-          )}
-        </div>
-
-        {/* Primary Contact Email */}
-        <div>
-          <label
-            htmlFor="primaryContactEmail"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
-            Primary Contact Email <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="email"
-            id="primaryContactEmail"
-            name="primaryContactEmail"
-            value={basics.primaryContactEmail}
-            onChange={(e) => setField('primaryContactEmail', e.target.value)}
-            onBlur={() => validateField('primaryContactEmail')}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.primaryContactEmail
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
-            placeholder="email@example.com"
-            required
-          />
-          {errors.primaryContactEmail && (
-            <p className="mt-1 text-xs text-red-600">{errors.primaryContactEmail}</p>
-          )}
-        </div>
-
-        {/* Address - FULL WIDTH (md:col-span-2) */}
-        <div className="md:col-span-2">
-          <label
-            htmlFor="address"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
-            Address <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            id="address"
-            name="address"
-            value={basics.address}
-            onChange={(e) => setField('address', e.target.value.slice(0, 150))}
-            onBlur={() => validateField('address')}
-            maxLength={150}
-            rows={2}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                       ${
-                         errors.address
-                           ? 'border-red-500 focus:ring-red-500'
-                           : 'border-slate-300 focus:ring-blue-500'
-                       }`}
-            placeholder="Enter complete address"
-            required
-          />
-          {errors.address && (
-            <p className="mt-1 text-xs text-red-600">{errors.address}</p>
-          )}
-        </div>
-
-        {/* Pincode */}
-        <div>
-          <label
-            htmlFor="pincode"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
-            Pincode <span className="text-red-500">*</span>
+          <label htmlFor="pincode" className={labelClass}>
+            Pincode (6 Digits) <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <input
@@ -500,36 +372,27 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
                 setPincode(value);
               }}
               maxLength={6}
-              className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                         focus:outline-none focus:ring-1 focus:border-blue-500 transition bg-slate-50/70
-                         ${
-                           geoError
-                             ? 'border-red-500 focus:ring-red-500'
-                             : 'border-slate-300 focus:ring-blue-500'
-                         }`}
+              className={inputClass(!!geoError)}
               placeholder="6-digit pincode"
               required
             />
             {isLoading && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-500"></div>
               </div>
             )}
           </div>
           {geoError && (
-            <p className="mt-1 text-xs text-orange-600">{geoError}</p>
+            <p className="mt-1.5 text-xs text-orange-600">{geoError}</p>
           )}
         </div>
 
-        {/* State (auto-filled or manual) */}
+        {/* State (Col 2) */}
         <div>
-          <label
-            htmlFor="state"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
+          <label htmlFor="state" className={labelClass}>
             State <span className="text-red-500">*</span>
             {isManual && (
-              <span className="text-xs text-orange-500 ml-2">(Manual)</span>
+              <span className="text-xs text-orange-500 ml-2 normal-case">(Manual)</span>
             )}
           </label>
           <input
@@ -539,28 +402,21 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
             value={geo.state || ''}
             onChange={(e) => setState(e.target.value)}
             readOnly={!isManual && !geoError}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition
-                       ${
-                         !isManual && !geoError
-                           ? 'bg-slate-100 cursor-not-allowed'
-                           : 'bg-slate-50/70'
-                       }
+            className={`mt-1 block w-full border rounded-lg shadow-sm px-4 py-3 text-sm text-slate-800 placeholder-slate-400
+                       focus:outline-none focus:ring-2 focus:border-blue-500 transition-all duration-200
+                       ${!isManual && !geoError ? 'bg-slate-100 cursor-not-allowed' : 'bg-white'}
                        border-slate-300 focus:ring-blue-500`}
             placeholder="State (auto-filled)"
             required
           />
         </div>
 
-        {/* City (auto-filled or manual) */}
+        {/* City (Col 3) */}
         <div>
-          <label
-            htmlFor="city"
-            className="block text-xs font-semibold text-slate-600 uppercase tracking-wider"
-          >
+          <label htmlFor="city" className={labelClass}>
             City <span className="text-red-500">*</span>
             {isManual && (
-              <span className="text-xs text-orange-500 ml-2">(Manual)</span>
+              <span className="text-xs text-orange-500 ml-2 normal-case">(Manual)</span>
             )}
           </label>
           <input
@@ -570,17 +426,36 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
             value={geo.city || ''}
             onChange={(e) => setCity(e.target.value)}
             readOnly={!isManual && !geoError}
-            className={`mt-1 block w-full border rounded-lg shadow-sm px-3 py-2 text-sm text-slate-800 placeholder-slate-400
-                       focus:outline-none focus:ring-1 focus:border-blue-500 transition
-                       ${
-                         !isManual && !geoError
-                           ? 'bg-slate-100 cursor-not-allowed'
-                           : 'bg-slate-50/70'
-                       }
+            className={`mt-1 block w-full border rounded-lg shadow-sm px-4 py-3 text-sm text-slate-800 placeholder-slate-400
+                       focus:outline-none focus:ring-2 focus:border-blue-500 transition-all duration-200
+                       ${!isManual && !geoError ? 'bg-slate-100 cursor-not-allowed' : 'bg-white'}
                        border-slate-300 focus:ring-blue-500`}
             placeholder="City (auto-filled)"
             required
           />
+        </div>
+
+        {/* ==================== ROW 6 ==================== */}
+        {/* Address - FULL WIDTH (Span all 3 columns) */}
+        <div className="md:col-span-3 fc-span-3">
+          <label htmlFor="address" className={labelClass}>
+            Address <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            id="address"
+            name="address"
+            value={basics.address}
+            onChange={(e) => setField('address', e.target.value.slice(0, 150))}
+            onBlur={() => validateField('address')}
+            maxLength={150}
+            rows={3}
+            className={inputClass(!!errors.address)}
+            placeholder="Enter complete address"
+            required
+          />
+          {errors.address && (
+            <p className="mt-1.5 text-xs text-red-600">{errors.address}</p>
+          )}
         </div>
       </div>
     </div>
