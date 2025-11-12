@@ -4,7 +4,7 @@
  * Redesigned with 3-column grid layout
  */
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { UseVendorBasicsReturn } from '../hooks/useVendorBasics';
 import { UsePincodeLookupReturn } from '../hooks/usePincodeLookup';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
@@ -16,6 +16,10 @@ import { InformationCircleIcon } from '@heroicons/react/24/outline';
 interface CompanySectionProps {
   vendorBasics: UseVendorBasicsReturn;
   pincodeLookup: UsePincodeLookupReturn;
+  transportMode: 'road' | 'air' | 'rail' | 'ship';
+  onTransportModeChange: (mode: 'road' | 'air' | 'rail' | 'ship') => void;
+  companyRating?: number;
+  onCompanyRatingChange?: (rating: number) => void;
 }
 
 // =============================================================================
@@ -25,6 +29,10 @@ interface CompanySectionProps {
 export const CompanySection: React.FC<CompanySectionProps> = ({
   vendorBasics,
   pincodeLookup,
+  transportMode,
+  onTransportModeChange,
+  companyRating = 3,
+  onCompanyRatingChange,
 }) => {
   const { basics, errors, setField, validateField } = vendorBasics;
   const {
@@ -37,6 +45,9 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
     isManual,
   } = pincodeLookup;
 
+  // Ref for transport mode select element
+  const transportSelectRef = useRef<HTMLSelectElement>(null);
+
   // Common label className with enhanced typography
   const labelClass = "block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-2";
 
@@ -45,6 +56,20 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
     `mt-1 block w-full border rounded-lg shadow-sm px-4 py-3 text-sm text-slate-800 placeholder-slate-400
      focus:outline-none focus:ring-2 focus:border-blue-500 transition-all duration-200 bg-white
      ${hasError ? 'border-red-500 focus:ring-red-500' : 'border-slate-300 focus:ring-blue-500'}`;
+
+  // Disable non-road options on mount and whenever transportMode changes
+  useEffect(() => {
+    if (transportSelectRef.current) {
+      Array.from(transportSelectRef.current.options).forEach((option) => {
+        if (option.value !== 'road') {
+          option.disabled = true;
+          option.setAttribute('aria-disabled', 'true');
+          option.setAttribute('tabindex', '-1');
+          option.classList.add('fc-option-disabled');
+        }
+      });
+    }
+  }, [transportMode]);
 
   return (
     <div className="fc-form-shell bg-white rounded-xl shadow-lg border border-slate-200 p-10">
@@ -61,7 +86,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
 
         {/* ==================== ROW 1 ==================== */}
         {/* Legal Company Name (Col 1) */}
-        <div>
+        <div className="field">
           <label htmlFor="legalCompanyName" className={labelClass}>
             Legal Company Name <span className="text-red-500">*</span>
           </label>
@@ -83,7 +108,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
         </div>
 
         {/* Display Name (Col 2) */}
-        <div>
+        <div className="field">
           <label htmlFor="displayName" className={labelClass}>
             Display Name <span className="text-red-500">*</span>
           </label>
@@ -105,7 +130,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
         </div>
 
         {/* Company Name (Col 3) */}
-        <div>
+        <div className="field">
           <label htmlFor="companyName" className={labelClass}>
             Company Name <span className="text-red-500">*</span>
           </label>
@@ -128,7 +153,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
 
         {/* ==================== ROW 2 ==================== */}
         {/* Sub Vendor (Col 1) */}
-        <div>
+        <div className="field">
           <label htmlFor="subVendor" className={labelClass}>
             Sub Vendor <span className="text-red-500">*</span>
           </label>
@@ -150,7 +175,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
         </div>
 
         {/* Vendor Code (Col 2) */}
-        <div>
+        <div className="field">
           <label htmlFor="vendorCode" className={labelClass}>
             Vendor Code <span className="text-red-500">*</span>
           </label>
@@ -176,7 +201,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
         </div>
 
         {/* Primary Contact Name (Col 3) */}
-        <div>
+        <div className="field">
           <label htmlFor="primaryContactName" className={labelClass}>
             Primary Contact Name <span className="text-red-500">*</span>
           </label>
@@ -203,7 +228,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
 
         {/* ==================== ROW 3 ==================== */}
         {/* Primary Contact Phone (Col 1) */}
-        <div>
+        <div className="field">
           <label htmlFor="primaryContactPhone" className={labelClass}>
             Primary Contact Phone <span className="text-red-500">*</span>
           </label>
@@ -230,7 +255,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
         </div>
 
         {/* Primary Contact Email (Col 2) */}
-        <div>
+        <div className="field">
           <label htmlFor="primaryContactEmail" className={labelClass}>
             Primary Contact Email <span className="text-red-500">*</span>
           </label>
@@ -251,7 +276,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
         </div>
 
         {/* Contact Person Name (Col 3) */}
-        <div>
+        <div className="field">
           <label htmlFor="contactPersonName" className={labelClass}>
             Contact Person <span className="text-red-500">*</span>
           </label>
@@ -278,7 +303,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
 
         {/* ==================== ROW 4 ==================== */}
         {/* Vendor Phone Number (Col 1) */}
-        <div>
+        <div className="field">
           <label htmlFor="vendorPhoneNumber" className={labelClass}>
             Vendor Phone Number <span className="text-red-500">*</span>
           </label>
@@ -305,7 +330,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
         </div>
 
         {/* Vendor Email Address (Col 2) */}
-        <div>
+        <div className="field">
           <label htmlFor="vendorEmailAddress" className={labelClass}>
             Vendor Email Address <span className="text-red-500">*</span>
           </label>
@@ -326,7 +351,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
         </div>
 
         {/* GST No. (Col 3) */}
-        <div>
+        <div className="field">
           <label htmlFor="gstin" className={labelClass}>
             GST No. <span className="text-red-500">*</span>
           </label>
@@ -356,7 +381,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
 
         {/* ==================== ROW 5 ==================== */}
         {/* Pincode (6 digits) (Col 1) */}
-        <div>
+        <div className="field">
           <label htmlFor="pincode" className={labelClass}>
             Pincode (6 Digits) <span className="text-red-500">*</span>
           </label>
@@ -388,7 +413,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
         </div>
 
         {/* State (Col 2) */}
-        <div>
+        <div className="field">
           <label htmlFor="state" className={labelClass}>
             State <span className="text-red-500">*</span>
             {isManual && (
@@ -412,7 +437,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
         </div>
 
         {/* City (Col 3) */}
-        <div>
+        <div className="field">
           <label htmlFor="city" className={labelClass}>
             City <span className="text-red-500">*</span>
             {isManual && (
@@ -437,7 +462,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
 
         {/* ==================== ROW 6 ==================== */}
         {/* Address - FULL WIDTH (Span all 3 columns) */}
-        <div className="md:col-span-3 fc-span-3">
+        <div className="field md:col-span-3 fc-span-3">
           <label htmlFor="address" className={labelClass}>
             Address <span className="text-red-500">*</span>
           </label>
@@ -456,6 +481,64 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
           {errors.address && (
             <p className="mt-1.5 text-xs text-red-600">{errors.address}</p>
           )}
+        </div>
+
+        {/* ==================== ROW 7 ==================== */}
+        {/* Service Modes (Col 1) - Placeholder for future implementation */}
+        <div className="fc-vertical-stack">
+          {/* Service modes checkboxes can be added here */}
+        </div>
+
+        {/* Empty Middle Column (Col 2) */}
+        <div></div>
+
+        {/* Transport Mode + Company Rating (Col 3) */}
+        <div className="field fc-transport-mode">
+          <label htmlFor="transportMode" className={labelClass}>
+            Transport Mode <span className="text-red-500">*</span>
+          </label>
+          <select
+            ref={transportSelectRef}
+            id="transportMode"
+            name="transportMode"
+            value={transportMode}
+            onChange={(e) => {
+              // Force selection to 'road' regardless of what user clicks
+              onTransportModeChange('road');
+            }}
+            className={`mt-1 block w-full border rounded-lg shadow-sm px-4 py-3 text-sm text-slate-800 placeholder-slate-400
+                       focus:outline-none focus:ring-2 focus:border-blue-500 transition-all duration-200 bg-white
+                       border-slate-300 focus:ring-blue-500`}
+            required
+          >
+            <option value="road">Road</option>
+            <option value="air">Air</option>
+            <option value="rail">Rail</option>
+            <option value="ship">Ship</option>
+          </select>
+
+          {/* Company Rating Slider - Right-aligned */}
+          <div className="fc-form-actions">
+            <label htmlFor="companyRating" className={labelClass}>
+              Company Rating
+            </label>
+            <div className="flex items-center gap-3 w-full max-w-xs">
+              <input
+                type="range"
+                id="companyRating"
+                name="companyRating"
+                min="1"
+                max="5"
+                step="0.5"
+                value={companyRating}
+                onChange={(e) => onCompanyRatingChange?.(Number(e.target.value))}
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+              />
+              <span className="text-sm font-semibold text-slate-700 min-w-[2rem] text-right">
+                {companyRating}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

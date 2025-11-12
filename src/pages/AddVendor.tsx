@@ -156,6 +156,7 @@ export const AddVendor: React.FC = () => {
 
   // Page-level state
   const [transportMode, setTransportMode] = useState<'road' | 'air' | 'rail' | 'ship'>('road');
+  const [companyRating, setCompanyRating] = useState<number>(3);
   const [priceChartFile, setPriceChartFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -524,7 +525,7 @@ export const AddVendor: React.FC = () => {
       fd.append('address', payloadForApi.address);
       fd.append('state', payloadForApi.state);
       fd.append('pincode', String(payloadForApi.pincode));
-      fd.append('rating', '3'); // Default rating
+      fd.append('rating', String(companyRating));
       
       // Backend expects priceRate and priceChart as separate fields, not nested in prices
       fd.append('priceRate', JSON.stringify(payloadForApi.prices.priceRate));
@@ -573,6 +574,7 @@ export const AddVendor: React.FC = () => {
       }
       setPriceChartFile(null);
       setTransportMode('road');
+      setCompanyRating(3);
       setZpm(null);
       setWizardValidation(null);
       setWizardStatus(null);
@@ -601,6 +603,7 @@ export const AddVendor: React.FC = () => {
     }
     setPriceChartFile(null);
     setTransportMode('road');
+    setCompanyRating(3);
     clearDraft();
     toast.success('Form reset', { duration: 1200 });
   };
@@ -701,7 +704,14 @@ export const AddVendor: React.FC = () => {
           <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm overflow-hidden">
             <div className="grid grid-cols-1 gap-0 divide-y divide-slate-200">
               <div className="p-6 md:p-8">
-                <CompanySection vendorBasics={vendorBasics} pincodeLookup={pincodeLookup} />
+                <CompanySection
+                  vendorBasics={vendorBasics}
+                  pincodeLookup={pincodeLookup}
+                  transportMode={transportMode}
+                  onTransportModeChange={(m) => setTransportMode(m)}
+                  companyRating={companyRating}
+                  onCompanyRatingChange={setCompanyRating}
+                />
               </div>
 
               <div className="p-6 md:p-8 bg-slate-50/60">
