@@ -8,6 +8,7 @@ import { getTemporaryTransporters, deleteTemporaryTransporter } from '../service
 import { TemporaryTransporter } from '../utils/validators';
 import { TableCellsIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
+import { useAuth } from '../hooks/useAuth';
 
 // =============================================================================
 // COMPONENT
@@ -22,13 +23,18 @@ export const SavedVendorsTable: React.FC<{ refreshTrigger?: number }> = ({
     (TemporaryTransporter & { _id: string }) | null
   >(null);
 
+  // Get customerId from auth context
+  const { user } = useAuth();
+  const customerId = user?._id;
+
   /**
    * Load vendors from API
    */
   const loadVendors = async () => {
     setIsLoading(true);
     try {
-      const data = await getTemporaryTransporters();
+      // Pass customerId to filter vendors by current user
+      const data = await getTemporaryTransporters(customerId);
       setVendors(data);
     } catch (error) {
       console.error('Failed to load vendors:', error);
@@ -56,11 +62,13 @@ export const SavedVendorsTable: React.FC<{ refreshTrigger?: number }> = ({
   };
 
   /**
-   * Load vendors on mount and when refresh trigger changes
+   * Load vendors on mount and when refresh trigger or customerId changes
    */
   useEffect(() => {
-    loadVendors();
-  }, [refreshTrigger]);
+    if (customerId) {
+      loadVendors();
+    }
+  }, [refreshTrigger, customerId]);
 
   /**
    * Format date
@@ -96,15 +104,26 @@ export const SavedVendorsTable: React.FC<{ refreshTrigger?: number }> = ({
         </button>
       </div>
 
+      {/* Not authenticated state */}
+      {!customerId && !isLoading && (
+        <div className="text-center py-12">
+          <TableCellsIcon className="w-12 h-12 mx-auto text-slate-300 mb-4" />
+          <p className="text-slate-600">Please sign in to view saved vendors</p>
+          <p className="text-sm text-slate-500 mt-2">
+            You need to be authenticated to access this feature
+          </p>
+        </div>
+      )}
+
       {/* Loading state */}
-      {isLoading && (
+      {isLoading && customerId && (
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
         </div>
       )}
 
       {/* Empty state */}
-      {!isLoading && vendors.length === 0 && (
+      {!isLoading && customerId && vendors.length === 0 && (
         <div className="text-center py-12">
           <TableCellsIcon className="w-12 h-12 mx-auto text-slate-300 mb-4" />
           <p className="text-slate-600">No vendors saved yet</p>
