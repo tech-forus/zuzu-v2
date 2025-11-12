@@ -1,3 +1,32 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Form Layout Classes */
+.fc-form-shell {
+  /* Container for form cards */
+}
+
+.fc-form-grid {
+  /* 3-column grid for form fields */
+}
+
+.fc-span-3 {
+  /* Full width spanning all 3 columns */
+}
+
+.fc-vertical-stack {
+  /* Vertical stacking for checkbox groups */
+}
+
+.fc-transport-mode {
+  /* Transport mode field wrapper */
+}
+
+/* Disabled Options Styling */
+.fc-option-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #f1f5f9;
+  color: #94a3b8;
+}

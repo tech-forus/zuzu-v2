@@ -701,7 +701,12 @@ export const AddVendor: React.FC = () => {
           <div className="rounded-2xl border border-slate-200 bg-white/90 shadow-sm overflow-hidden">
             <div className="grid grid-cols-1 gap-0 divide-y divide-slate-200">
               <div className="p-6 md:p-8">
-                <CompanySection vendorBasics={vendorBasics} pincodeLookup={pincodeLookup} />
+                <CompanySection
+                  vendorBasics={vendorBasics}
+                  pincodeLookup={pincodeLookup}
+                  transportMode={transportMode}
+                  onTransportModeChange={(m) => setTransportMode(m)}
+                />
               </div>
 
               <div className="p-6 md:p-8 bg-slate-50/60">
