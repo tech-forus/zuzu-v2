@@ -42,6 +42,10 @@
   /* Transport mode field wrapper */
 }
 
+.fc-volumetric {
+  /* Volumetric unit field wrapper */
+}
+
 .fc-form-actions {
   /* Right-aligned actions like rating slider */
   display: flex;

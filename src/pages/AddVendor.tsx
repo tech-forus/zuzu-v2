@@ -711,6 +711,7 @@ export const AddVendor: React.FC = () => {
                   onTransportModeChange={(m) => setTransportMode(m)}
                   companyRating={companyRating}
                   onCompanyRatingChange={setCompanyRating}
+                  volumetric={volumetric}
                 />
               </div>
 

@@ -7,6 +7,7 @@
 import React, { useEffect, useRef } from 'react';
 import { UseVendorBasicsReturn } from '../hooks/useVendorBasics';
 import { UsePincodeLookupReturn } from '../hooks/usePincodeLookup';
+import { useVolumetric } from '../hooks/useVolumetric';
 import { InformationCircleIcon } from '@heroicons/react/24/outline';
 
 // =============================================================================
@@ -20,6 +21,7 @@ interface CompanySectionProps {
   onTransportModeChange: (mode: 'road' | 'air' | 'rail' | 'ship') => void;
   companyRating?: number;
   onCompanyRatingChange?: (rating: number) => void;
+  volumetric: ReturnType<typeof useVolumetric>;
 }
 
 // =============================================================================
@@ -33,6 +35,7 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
   onTransportModeChange,
   companyRating = 3,
   onCompanyRatingChange,
+  volumetric,
 }) => {
   const { basics, errors, setField, validateField } = vendorBasics;
   const {
@@ -47,6 +50,20 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
 
   // Ref for transport mode select element
   const transportSelectRef = useRef<HTMLSelectElement>(null);
+
+  // Volumetric data
+  const {
+    state: volumetricState,
+    volumetricDivisorOptions,
+    cftFactorOptions,
+    setUnit,
+    setDynamicVolumetricValue,
+  } = volumetric;
+
+  const isCM = volumetricState.unit === 'cm';
+  const dynamicLabel = isCM ? 'Volumetric Divisor' : 'CFT Factor';
+  const volumetricOptions = isCM ? volumetricDivisorOptions : cftFactorOptions;
+  const selectedVolumetric = isCM ? volumetricState.volumetricDivisor : volumetricState.cftFactor;
 
   // Common label className with enhanced typography
   const labelClass = "block text-[10px] font-bold text-slate-700 uppercase tracking-widest mb-2";
@@ -484,10 +501,106 @@ export const CompanySection: React.FC<CompanySectionProps> = ({
         </div>
 
         {/* ==================== ROW 7 ==================== */}
-        {/* Service Modes (Col 1) - Placeholder for future implementation */}
-        <div className="fc-vertical-stack">
-          {/* Service modes checkboxes can be added here */}
+        {/* Service Modes (Col 1) */}
+        <div className="field fc-vertical-stack">
+          <label className={labelClass}>
+            Service Modes
+          </label>
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span>Air Express</span>
+            </label>
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span>Surface</span>
+            </label>
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                className="rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span>Rail</span>
+            </label>
+          </div>
         </div>
+
+        {/* Empty Middle Column (Col 2) */}
+        <div></div>
+
+        {/* Volumetric Unit (Col 3) */}
+        <div className="field fc-volumetric">
+          <label className={labelClass}>
+            Volumetric Unit <span className="text-red-500">*</span>
+          </label>
+          <div className="inline-flex rounded-lg shadow-sm border border-slate-300 mt-1">
+            <button
+              type="button"
+              onClick={() => setUnit('cm')}
+              className={
+                'px-4 py-2 text-sm font-medium rounded-l-lg transition-colors ' +
+                (isCM
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-slate-700 hover:bg-slate-50')
+              }
+            >
+              Centimeters (cm)
+            </button>
+            <button
+              type="button"
+              onClick={() => setUnit('in')}
+              className={
+                'px-4 py-2 text-sm font-medium rounded-r-lg border-l border-slate-300 transition-colors ' +
+                (!isCM
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-slate-700 hover:bg-slate-50')
+              }
+            >
+              Inches (in)
+            </button>
+          </div>
+
+          {/* Divisor/CFT Dropdown */}
+          <div className="mt-4">
+            <label htmlFor="volumetricDivisor" className={labelClass}>
+              {dynamicLabel} <span className="text-red-500">*</span>
+            </label>
+            <select
+              id="volumetricDivisor"
+              value={selectedVolumetric ?? ''}
+              onChange={(e) => setDynamicVolumetricValue(Number(e.target.value))}
+              className={`mt-1 block w-full border rounded-lg shadow-sm px-4 py-3 text-sm text-slate-800 placeholder-slate-400
+                         focus:outline-none focus:ring-2 focus:border-blue-500 transition-all duration-200 bg-white
+                         border-slate-300 focus:ring-blue-500`}
+              required
+            >
+              <option value="" disabled>
+                Select {dynamicLabel}
+              </option>
+              {volumetricOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                  {isCM ? ' cm³' : ''}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1.5 text-xs text-slate-500">
+              {isCM
+                ? 'Volumetric weight = (L × W × H) / Divisor'
+                : 'Volumetric weight = ((L × W × H) / 1728) × CFT Factor'}
+            </p>
+          </div>
+        </div>
+
+        {/* ==================== ROW 8 ==================== */}
+        {/* Empty Column (Col 1) */}
+        <div></div>
 
         {/* Empty Middle Column (Col 2) */}
         <div></div>
